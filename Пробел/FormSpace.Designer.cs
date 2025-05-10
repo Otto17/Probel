@@ -190,7 +190,6 @@
             Name = "FormSpace";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Пробел";
-            Load += FormSpace_Load;
             Resize += FormSpace_Resize;
             ResumeLayout(false);
             PerformLayout();

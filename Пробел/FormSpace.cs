@@ -8,11 +8,13 @@ namespace Пробел
 {
     internal partial class FormSpace : Form
     {
-        private System.Windows.Forms.Timer? clipboardTimer;  // Таймер для мониторинга буфера обмена
-        private string lastClipboardText = string.Empty;     // Хранит последний текст из буфера обмена для сравнения
-        private bool isUpdatingOutput = false;               // Флаг, предотвращающий рекурсивное обновление в OutputTextBox
-        private bool shouldShow = true;                      // Флаг, определяющий, показывать ли форму при запуске
+        private readonly System.Windows.Forms.Timer? clipboardTimer; // Таймер для мониторинга буфера обмена
+        private string lastClipboardText = string.Empty;             // Хранит последний текст из буфера обмена для сравнения
+        private bool isUpdatingOutput = false;                       // Флаг, предотвращающий рекурсивное обновление в OutputTextBox
+        private bool shouldShow = true;                              // Флаг, определяющий, показывать ли форму при запуске
 
+        // Таймер для отложенного копирования (что бы не сбивался курсор при руссном редактировании в полях ввода и вывода)
+        private readonly System.Windows.Forms.Timer copyTimer = new() { Interval = 250 };   // Задержка 250 мс
 
         // Путь к файлу конфига в %TEMP% пользователя
         private readonly string configPath = Path.Combine(Path.GetTempPath(), "config_Пробел.txt");
@@ -26,9 +28,12 @@ namespace Пробел
             this.ShowInTaskbar = false;
 
             // События формы и контролов
-            this.Resize += FormSpace_Resize;                            // Отслеживаем сворачивание/разворачивание
-            NotifyIcon1.MouseClick += NotifyIcon1_MouseClick;           // Клик по иконке в трее
+            this.Resize += FormSpace_Resize; // Отслеживаем сворачивание/разворачивание
+            NotifyIcon1.MouseClick += NotifyIcon1_MouseClick; // Клик по иконке в трее
             CheckBoxCopy.CheckedChanged += CheckBoxCopy_CheckedChanged; // Переключение автокопирования
+
+            // Инициализация обработчика для таймера отложенного копирования
+            copyTimer.Tick += CopyTimer_Tick;
 
             // Создаем контекстное меню для notifyIcon
             var trayMenu = new ContextMenuStrip();
@@ -76,11 +81,7 @@ namespace Пробел
             NotifyIcon1.Visible = true; // иконка всегда видима
 
             LoadConfig(); // читаем настройки из файла
-        }
 
-        // При загрузке формы настраиваем визуальные элементы
-        private void FormSpace_Load(object sender, EventArgs e)
-        {
             try
             {
                 // Делам панель индикатора круглой
@@ -91,14 +92,47 @@ namespace Пробел
                 PanelIndicator.BackColor = Color.Green;
 
                 // Запуск таймера мониторинга буфера обмена
-                clipboardTimer = new System.Windows.Forms.Timer { Interval = 200 };
+                clipboardTimer = new System.Windows.Forms.Timer { Interval = 200 }; // Задержка 200 мс
                 clipboardTimer.Tick += ClipboardTimer_Tick;
                 clipboardTimer.Start();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Не удалось запустить мониторинг буфера: {ex.Message}", "Ошибка",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Обработчик таймера для отложенного копирования
+        private void CopyTimer_Tick(object? sender, EventArgs e)
+        {
+            // Останавливаем таймер, чтобы не повторять копирование
+            copyTimer.Stop();
+
+            try
+            {
+                var text = OutputTextBox.Text;
+                if (!string.IsNullOrEmpty(text))
+                {
+                    // Отключаем монитор буфера перед своей записью
+                    clipboardTimer?.Stop();
+
+                    // Копируем текст в буфер
+                    Clipboard.SetText(text);
+
+                    // Обновляем lastClipboardText, чтобы монитор не затирал InputTextBox
+                    lastClipboardText = text;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось скопировать в буфер: {ex.Message}", "Ошибка",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                // Возвращаем оба таймера в рабочее состояние
+                clipboardTimer?.Start();
             }
         }
 
@@ -124,7 +158,7 @@ namespace Пробел
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -138,16 +172,17 @@ namespace Пробел
                 OutputTextBox.Text = formatted;
                 isUpdatingOutput = false;
 
-                // Сразу копируем при включенном автокопировании
+                // Запускаем таймер для отложенного копирования
                 if (CheckBoxCopy.Checked && !string.IsNullOrEmpty(formatted))
                 {
-                    Clipboard.SetText(formatted);
+                    copyTimer.Stop(); // Сбрасываем, если уже запущен
+                    copyTimer.Start(); // Запускаем копирование с задержкой
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при форматировании: {ex.Message}", "Ошибка",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -159,14 +194,19 @@ namespace Пробел
                 var text = OutputTextBox.Text ?? string.Empty;
                 if (!string.IsNullOrEmpty(text))
                 {
-                    try { Clipboard.SetText(text); }
+                    // Запускаем таймер для отложенного копирования
+                    try
+                    {
+                        copyTimer.Stop(); // Сбрасываем, если уже запущен
+                        copyTimer.Start(); // Запускаем копирование с задержкой
+                    }
                     catch (Exception ex)
                     {
                         MessageBox.Show(
-                            $"Не удалось скопировать в буфер после редактирования: {ex.Message}",
-                            "Ошибка",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
+                        $"Не удалось скопировать в буфер после редактирования: {ex.Message}",
+                        "Ошибка",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     }
                 }
             }
@@ -185,15 +225,30 @@ namespace Пробел
             try
             {
                 var text = OutputTextBox.Text;
-                if (!string.IsNullOrEmpty(text))
-                    Clipboard.SetText(text);
+                if (string.IsNullOrEmpty(text)) return;
+
+                // Отключаем монитор
+                clipboardTimer?.Stop();
+
+                // Копируем
+                Clipboard.SetText(text);
+
+                // Сразу же обновляем lastClipboardText,
+                // чтобы при следующем тике не затирать InputTextBox
+                lastClipboardText = text;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Не удалось скопировать в буфер: {ex.Message}", "Ошибка",
                                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            finally
+            {
+                // Включаем монитор обратно
+                clipboardTimer?.Start();
+            }
         }
+
 
         // Очистка буфера обмена и обновление индикатора
         private void ButtonEraseBuf_Click(object? sender, EventArgs e)
@@ -207,7 +262,7 @@ namespace Пробел
             catch (Exception ex)
             {
                 MessageBox.Show($"Не удалось очистить буфер: {ex.Message}", "Ошибка",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -230,16 +285,37 @@ namespace Пробел
         // Обработчик переключения автокопирования: сохраняет и сразу копирует существующий текст
         private void CheckBoxCopy_CheckedChanged(object? sender, EventArgs e)
         {
-            // Сразу копируем текущее содержимое OutputTextBox, если включено
-            if (CheckBoxCopy.Checked && !string.IsNullOrEmpty(OutputTextBox.Text))
+            try
             {
-                Clipboard.SetText(OutputTextBox.Text);
-            }
-            // Синхронизируем пункт меню
-            if (NotifyIcon1.ContextMenuStrip is ContextMenuStrip cs && cs.Items[1] is ToolStripMenuItem mi)
-                mi.Checked = CheckBoxCopy.Checked;
+                if (CheckBoxCopy.Checked && !string.IsNullOrEmpty(OutputTextBox.Text))
+                {
+                    // Отключаем монитор буфера
+                    clipboardTimer?.Stop();
 
-            SaveConfig(WindowState != FormWindowState.Minimized);
+                    // Копируем отформатированный текст
+                    Clipboard.SetText(OutputTextBox.Text);
+
+                    // Обновляем lastClipboardText, чтобы таймер не перезаписывал InputTextBox
+                    lastClipboardText = OutputTextBox.Text;
+                }
+                // Синхронизируем пункт меню в трее
+                if (NotifyIcon1.ContextMenuStrip is ContextMenuStrip cs && cs.Items[1] is ToolStripMenuItem mi)
+                {
+                    mi.Checked = CheckBoxCopy.Checked;
+                }
+                // Сохраняем состояние
+                SaveConfig(WindowState != FormWindowState.Minimized);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось скопировать в буфер: {ex.Message}", "Ошибка",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                // Включаем монитор буфера обратно
+                clipboardTimer?.Start();
+            }
         }
 
         // Обработчик сворачивания/разворачивания формы
@@ -346,10 +422,16 @@ namespace Пробел
             base.SetVisibleCore(value);
         }
 
-        // Останавливает таймер при закрытии формы
+        // Останавливает таймеры при закрытии формы и освобождает ресурсы
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            try { clipboardTimer?.Stop(); clipboardTimer?.Dispose(); }
+            try
+            {
+                clipboardTimer?.Stop();
+                clipboardTimer?.Dispose();
+                copyTimer?.Stop();
+                copyTimer?.Dispose();
+            }
             catch { }
             base.OnFormClosing(e);
         }

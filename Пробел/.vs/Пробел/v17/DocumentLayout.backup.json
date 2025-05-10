@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|d:\\\u043F\u0440\u043E\u0431\u0435\u043B\\formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|solutionrelative:formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|d:\\\u043F\u0440\u043E\u0431\u0435\u043B\\formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|solutionrelative:formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|d:\\\u043F\u0440\u043E\u0431\u0435\u043B\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|d:\\\u043F\u0440\u043E\u0431\u0435\u043B\\formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{13395CBD-E0D2-42ED-94C9-79AA3DCA30C4}|\u041F\u0440\u043E\u0431\u0435\u043B.csproj|solutionrelative:formspace.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,8 +22,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-10T06:43:18.323Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -39,18 +52,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-10T06:43:18.323Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "FormSpace.cs",
               "DocumentMoniker": "D:\\\u041F\u0440\u043E\u0431\u0435\u043B\\FormSpace.cs",
               "RelativeDocumentMoniker": "FormSpace.cs",
@@ -58,7 +59,7 @@
               "RelativeToolTip": "FormSpace.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T04:47:54.499Z",
+              "WhenOpened": "2025-05-10T11:19:34.843Z",
               "EditorCaption": ""
             }
           ]
