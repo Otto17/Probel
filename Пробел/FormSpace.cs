@@ -2,6 +2,7 @@
 // Лицензия: MIT (см. LICENSE)
 
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Пробел
@@ -80,7 +81,8 @@ namespace Пробел
             NotifyIcon1.ContextMenuStrip = trayMenu;
             NotifyIcon1.Visible = true; // иконка всегда видима
 
-            LoadConfig(); // читаем настройки из файла
+            LoadConfig();       // читаем настройки из файла
+            UpdateTrayIcon();   // Устанавливаем иконку при запуске
 
             try
             {
@@ -305,6 +307,7 @@ namespace Пробел
                 }
                 // Сохраняем состояние
                 SaveConfig(WindowState != FormWindowState.Minimized);
+                UpdateTrayIcon(); // Обновляем иконку при изменении состояния
             }
             catch (Exception ex)
             {
@@ -344,6 +347,52 @@ namespace Пробел
                 WindowState = FormWindowState.Normal;
                 ShowInTaskbar = true;
                 SaveConfig(true);
+            }
+        }
+
+        // Изменение цвета иконки в трее, в зависимости от состояния чекбокса "Обновить буфер"
+        private void UpdateTrayIcon()
+        {
+            try
+            {
+                // Получаем текущую сборку
+                var assembly = Assembly.GetExecutingAssembly();
+
+                // Для отладки можно проверить список всех доступных ресурсов
+                //var resources = assembly.GetManifestResourceNames();
+                //MessageBox.Show("Доступные ресурсы:\n" + string.Join("\n", resources),
+                //               "Отладочная информация",
+                //               MessageBoxButtons.OK,
+                //               MessageBoxIcon.Information);
+
+                // Формируем имя ресурса (Namespace.ИмяФайла.Расширение)
+                string resourceName = CheckBoxCopy.Checked
+                    ? "Пробел.Resources.trayBufOn.ico"
+                    : "Пробел.Resources.trayBufOff.ico";
+
+                // Загружаем иконку из ресурсов
+                using Stream? stream = assembly.GetManifestResourceStream(resourceName);
+                if (stream != null)
+                {
+                    // Создаем новую иконку и освобождаем старую (если была)
+                    var oldIcon = NotifyIcon1.Icon;
+                    NotifyIcon1.Icon = new Icon(stream);
+                    oldIcon?.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show($"Ресурс иконки не найден: {resourceName}",
+                        "Ошибка",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке иконки: {ex.Message}",
+                    "Ошибка",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

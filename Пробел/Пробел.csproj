@@ -8,13 +8,25 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>10.05.25</AssemblyVersion>
-    <FileVersion>10.05.25</FileVersion>
+    <AssemblyVersion>13.05.25</AssemblyVersion>
+    <FileVersion>13.05.25</FileVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\trayBufOff.ico" />
+    <None Remove="Resources\trayBufOn.ico" />
+    <None Remove="trayBufOff.ico" />
+    <None Remove="trayBufOn.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\trayBufOff.ico" />
+    <EmbeddedResource Include="Resources\trayBufOn.ico" />
   </ItemGroup>
 
   <ItemGroup>
