@@ -63,8 +63,10 @@ namespace Пробел
             };
             miClear.Click += (s, e) =>
             {
-                ButtonEraseBuf_Click(s, e);
-                UpdateTrayIndicator();
+                ButtonEraseBuf_Click(s, e); // Очистка буфера
+                InputTextBox.Clear();       // Очистка исходного поля
+                OutputTextBox.Clear();      // Очистка поля с рузультатом
+                UpdateTrayIndicator();      // Облновление индикатора
             };
             trayMenu.Items.Add(miClear);
 
@@ -157,10 +159,10 @@ namespace Пробел
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                // Игнорируем исключния
+              //  MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -252,8 +254,15 @@ namespace Пробел
         }
 
 
-        // Очистка буфера обмена и обновление индикатора
+        // Вызов метода очистки в трее
         private void ButtonEraseBuf_Click(object? sender, EventArgs e)
+        {
+            ClearClipboardOnly(); // Очищаем только буфер
+        }
+
+
+        // Очистка буфера обмена и обновление индикатора
+        private void ClearClipboardOnly()
         {
             try
             {
@@ -267,6 +276,7 @@ namespace Пробел
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         // Форматирует строку: убирает лишние пробелы и табуляции
         private static string FormatText(string input)

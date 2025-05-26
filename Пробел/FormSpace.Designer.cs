@@ -145,7 +145,7 @@
             GorodDate.Name = "GorodDate";
             GorodDate.Size = new Size(69, 12);
             GorodDate.TabIndex = 7;
-            GorodDate.Text = "г. Омск 13.05.25";
+            GorodDate.Text = "г. Омск 26.05.25";
             // 
             // LinkLabel1
             // 

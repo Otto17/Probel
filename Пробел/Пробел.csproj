@@ -8,8 +8,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>13.05.25</AssemblyVersion>
-    <FileVersion>13.05.25</FileVersion>
+    <AssemblyVersion>26.05.25</AssemblyVersion>
+    <FileVersion>26.05.25</FileVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
